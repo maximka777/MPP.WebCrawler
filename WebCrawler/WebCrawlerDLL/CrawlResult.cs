@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace WebCrawlerDLL
 {
-    class CrawlResult
+    public class CrawlResult
     {
         private Dictionary<string, CrawlResult> dict;
 
-        CrawlResult this[string url]
+        public CrawlResult()
+        {
+            dict = new Dictionary<string, CrawlResult>();
+        }
+
+        public CrawlResult this[string url]
         {
             get
             {
@@ -22,12 +27,17 @@ namespace WebCrawlerDLL
             }
         }
 
-        List<string> Keys
+        public List<string> Keys
         {
             get
             {
                 return dict.Keys.ToList<string>();
             }
+        }
+
+        public string ToString()
+        {
+            return string.Empty;
         }
     }
 }

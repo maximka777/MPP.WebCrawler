@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace WebCrawlerDLL
 {
-    class WebCrawler : ISimpleWebCrawler
+    public class WebCrawler : ISimpleWebCrawler
     {
+        public int Depth { get; set; }
+
         public async Task<CrawlResult> PerformCrawlingAsync(string[] urls)
         {
             return await Task.Run(() =>
@@ -18,7 +20,29 @@ namespace WebCrawlerDLL
 
         private CrawlResult PerformCrawling(string[] urls)
         {
-            return new CrawlResult();
+            var result = new CrawlResult();
+            foreach(string url in urls)
+            {
+                result[url] = HandleUrl(url, 0);
+            }
+        }
+
+        private CrawlResult HandleUrl(string pageUrl, int depth)
+        {
+            var result = new CrawlResult();
+            if (Depth <= depth)
+            {
+                result = null;
+            }
+            else
+            {
+                result = new CrawlResult();
+                foreach(string url in PageUrlScanner.ScanPageOnUrls(pageUrl))
+                {
+                    result[url] = HandleUrl(url, depth + 1);
+                }
+            }
+            return result;
         }
     }
 }

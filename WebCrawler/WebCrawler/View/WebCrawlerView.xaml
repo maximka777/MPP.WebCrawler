@@ -5,8 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WebCrawler.View"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-            
-    </Grid>
+             d:DesignHeight="600" d:DesignWidth="490">
+    <StackPanel Height="600">
+        <Label Foreground="Blue" Margin="5,5,5,0">Input for test</Label>
+        <TextBox Margin="5"/>
+        <Label Foreground="Blue" Margin="5,5,5,0">Crawl result</Label>
+        <TextBlock Text="{Binding StringCrawlResult}" Height="450" Margin="5"/>
+        <Button Command="{Binding CrawlCommand}" Margin="5">Convert</Button>
+    </StackPanel>
 </UserControl>
