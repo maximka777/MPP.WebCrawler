@@ -15,11 +15,11 @@ namespace WebCrawlerDLL
             this.maxDepth = maxDepth;
         }
 
-        public Task<CrawlResult> PerformCrawlingAsync(string[] urls)
+        public async Task<CrawlResult> PerformCrawlingAsync(string[] urls)
         {
-            return Task.Run(() =>
+            return await Task.Run(() =>
             {
-                return PerformCrawlingAsync(urls);
+                return PerformCrawling(urls);
             });
         }
 

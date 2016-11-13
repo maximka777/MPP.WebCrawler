@@ -35,7 +35,7 @@ namespace WebCrawler.ViewModel
 
     class WebCrawlerViewModel : INotifyPropertyChanged
     {
-        private readonly WebCrawlerDLL.WebCrawler webCrawler = new WebCrawlerDLL.WebCrawler(0);
+        private readonly WebCrawlerDLL.WebCrawler webCrawler = new WebCrawlerDLL.WebCrawler(2);
         private string stringCrawlResult;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -63,7 +63,9 @@ namespace WebCrawler.ViewModel
 
         private async void Crawl()
         {
-            CrawlResult crawlResult = await webCrawler.PerformCrawlingAsync(new string[0]);
+            string[] urls = new string[1];
+            urls[0] = "https://www.training.by";
+            CrawlResult crawlResult = await webCrawler.PerformCrawlingAsync(urls);
             StringCrawlResult = crawlResult.ToString();
         }
 

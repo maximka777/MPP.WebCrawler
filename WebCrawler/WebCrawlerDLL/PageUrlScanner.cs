@@ -47,14 +47,17 @@ namespace WebCrawlerDLL
             HtmlNodeCollection links = document.DocumentNode.SelectNodes("//a");
             List<string> result = new List<string>();
             Uri baseUri = new Uri(rootUrl);
-            foreach (var link in links)
+            if (links != null)
             {
-                if (link.Attributes.Contains("href"))
+                foreach (var link in links)
                 {
-                    string href = link.Attributes["href"].Value;
-                    if (href != null)
+                    if (link.Attributes.Contains("href"))
                     {
-                        result.Add(new Uri(baseUri, href).AbsoluteUri);
+                        string href = link.Attributes["href"].Value;
+                        if (href != null)
+                        {
+                            result.Add(new Uri(baseUri, href).AbsoluteUri);
+                        }
                     }
                 }
             }
