@@ -1,11 +1,10 @@
 ﻿using HtmlAgilityPack;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System;
 
 namespace WebCrawlerDLL
 {
@@ -26,11 +25,17 @@ namespace WebCrawlerDLL
             string result = string.Empty;
             HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(pageUrl);
             myRequest.Method = "GET";
-            WebResponse myResponse = myRequest.GetResponse();
-            using (StreamReader streamReader = new StreamReader(myResponse.GetResponseStream(), Encoding.UTF8))
+            try {
+                WebResponse myResponse = myRequest.GetResponse();
+                using (StreamReader streamReader = new StreamReader(myResponse.GetResponseStream(), Encoding.UTF8))
+                {
+                    result = streamReader.ReadToEnd();
+                    myResponse.Close();
+                }
+            }
+            catch(WebException exc)
             {
-                result = streamReader.ReadToEnd();
-                myResponse.Close();
+
             }
             return result;
         }
@@ -40,19 +45,16 @@ namespace WebCrawlerDLL
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(html);
             HtmlNodeCollection links = document.DocumentNode.SelectNodes("//a");
-            var result = new List<string>();
+            List<string> result = new List<string>();
+            Uri baseUri = new Uri(rootUrl);
             foreach (var link in links)
             {
                 if (link.Attributes.Contains("href"))
                 {
-                    var href = link.Attributes["href"].Value;
+                    string href = link.Attributes["href"].Value;
                     if (href != null)
                     {
-                        if (!href.StartsWith("http"))
-                        {
-                            href = rootUrl + href;
-                        }
-                        result.Add(href);
+                        result.Add(new Uri(baseUri, href).AbsoluteUri);
                     }
                 }
             }

@@ -35,9 +35,28 @@ namespace WebCrawlerDLL
             }
         }
 
+        private string GenerateTabSequence(int count)
+        {
+            return new StringBuilder().Append('\t', count).ToString();
+        }
+
+        public string ToString(int depth)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var key in Keys)
+            {
+                sb.Append(GenerateTabSequence(depth)).Append(key).Append('\n');
+                var value = this[key];
+                if (value != null) {
+                    sb.Append(value.ToString(depth + 1));
+                }
+            }
+            return sb.ToString();
+        }
+
         public string ToString()
         {
-            return string.Empty;
+            return ToString(0);
         }
     }
 }
