@@ -35,8 +35,10 @@ namespace WebCrawler.ViewModel
 
     class WebCrawlerViewModel : INotifyPropertyChanged
     {
-        private readonly WebCrawlerDLL.WebCrawler webCrawler = new WebCrawlerDLL.WebCrawler();
+        private readonly WebCrawlerDLL.WebCrawler webCrawler = new WebCrawlerDLL.WebCrawler(0);
         private string stringCrawlResult;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public string StringCrawlResult
         {
@@ -59,12 +61,10 @@ namespace WebCrawler.ViewModel
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private async void Crawl()
         {
             CrawlResult crawlResult = await webCrawler.PerformCrawlingAsync(new string[0]);
-            StringCrawlResult = "Max";
+            StringCrawlResult = crawlResult.ToString();
         }
 
         protected void RaisePropertyChangedEvent(string propertyName)

@@ -8,36 +8,42 @@ namespace WebCrawlerDLL
 {
     public class WebCrawler : ISimpleWebCrawler
     {
-        public int Depth { get; set; }
+        public int maxDepth;
 
-        public async Task<CrawlResult> PerformCrawlingAsync(string[] urls)
+        public WebCrawler(int maxDepth)
         {
-            return await Task.Run(() =>
+            this.maxDepth = maxDepth;
+        }
+
+        public Task<CrawlResult> PerformCrawlingAsync(string[] urls)
+        {
+            return Task.Run(() =>
             {
                 return PerformCrawlingAsync(urls);
             });
         }
 
-        private CrawlResult PerformCrawling(string[] urls)
+        public CrawlResult PerformCrawling(string[] urls)
         {
             var result = new CrawlResult();
             foreach(string url in urls)
             {
                 result[url] = HandleUrl(url, 0);
             }
+            return result;
         }
 
         private CrawlResult HandleUrl(string pageUrl, int depth)
         {
-            var result = new CrawlResult();
-            if (Depth <= depth)
+            CrawlResult result;
+            if (maxDepth <= depth)
             {
                 result = null;
             }
             else
             {
                 result = new CrawlResult();
-                foreach(string url in PageUrlScanner.ScanPageOnUrls(pageUrl))
+                foreach(string url in PageUrlScanner.Instance.ScanPageOnUrls(pageUrl))
                 {
                     result[url] = HandleUrl(url, depth + 1);
                 }
