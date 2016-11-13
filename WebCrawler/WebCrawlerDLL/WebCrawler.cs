@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace WebCrawlerDLL
 {
+    public class HandleUrlParam
+    {
+        public string Url { get; set; }
+        public int Depth { get; set; }
+
+        public HandleUrlParam(string url, int depth)
+        {
+            Url = url;
+            Depth = depth;
+        }
+    }
+
     public class WebCrawler : ISimpleWebCrawler
     {
         public int maxDepth;
@@ -26,26 +38,43 @@ namespace WebCrawlerDLL
         public CrawlResult PerformCrawling(string[] urls)
         {
             var result = new CrawlResult();
+            List<Task<CrawlResult>> tasks = new List<Task<CrawlResult>>();
             foreach(string url in urls)
             {
-                result[url] = HandleUrl(url, 0);
+                Task<CrawlResult> task = new Task<CrawlResult>(HandleUrl, new HandleUrlParam(url, 0));
+                task.Start();
+                tasks.Add(task);
+            }
+            for(int i = 0; i < urls.Length; i++)
+            {
+                result[urls[i]] = tasks[i].Result;
             }
             return result;
         }
 
-        private CrawlResult HandleUrl(string pageUrl, int depth)
+        private CrawlResult HandleUrl(object param)
         {
             CrawlResult result;
-            if (maxDepth <= depth)
+            HandleUrlParam handleUrlParam = (HandleUrlParam)param;
+            if (maxDepth <= handleUrlParam.Depth)
             {
                 result = null;
             }
             else
             {
                 result = new CrawlResult();
-                foreach(string url in PageUrlScanner.Instance.ScanPageOnUrls(pageUrl))
+                List<Task<CrawlResult>> tasks = new List<Task<CrawlResult>>();
+                List<string> urls = PageUrlScanner.Instance.ScanPageOnUrls(handleUrlParam.Url);
+                foreach (string url in urls)
                 {
-                    result[url] = HandleUrl(url, depth + 1);
+                    Task<CrawlResult> task = new Task<CrawlResult>(HandleUrl, 
+                        new HandleUrlParam(url, handleUrlParam.Depth + 1));
+                    task.Start();
+                    tasks.Add(task);
+                }
+                for (int i = 0; i < urls.Count; i++)
+                {
+                    result[urls[i]] = tasks[i].Result;
                 }
             }
             return result;
