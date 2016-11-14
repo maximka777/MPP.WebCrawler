@@ -5,11 +5,20 @@ using System.Net;
 using System.Text;
 using System.Diagnostics;
 using System;
+using log4net;
+using log4net.Config;
 
 namespace WebCrawlerDLL
 {
     class PageUrlScanner
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(PageUrlScanner).Name);
+        
+        static PageUrlScanner()
+        {
+            BasicConfigurator.Configure();
+        }
+
         private static readonly PageUrlScanner instance = new PageUrlScanner();
 
         public static PageUrlScanner Instance
@@ -36,7 +45,7 @@ namespace WebCrawlerDLL
                 }
             catch (Exception exc)
             {
-
+                log.Error(exc);
             }
             return result;
         }
@@ -60,7 +69,10 @@ namespace WebCrawlerDLL
                             try {
                                 result.Add(new Uri(baseUri, href).AbsoluteUri);
                             }
-                            catch(Exception exc) { }
+                            catch(Exception exc)
+                            {
+                                log.Error(exc);
+                            }
                         }
                     }
                 }
