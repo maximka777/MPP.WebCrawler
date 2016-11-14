@@ -21,9 +21,9 @@ namespace WebCrawler
                     result = serializer.Deserialize<Config>(reader);
                 }
             }
-            if(result.MaxDepth > 6)
+            if(result.MaxDepth > 5)
             {
-                throw new ArgumentException("MaxDepth can't be more then 6");
+                result.MaxDepth = 5;
             }
             return result;
         }

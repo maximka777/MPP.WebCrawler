@@ -37,7 +37,7 @@ namespace WebCrawlerDLL
 
         private string GenerateTabSequence(int count)
         {
-            return new StringBuilder().Append('\t', count).ToString();
+            return new string('\t', count);
         }
 
         public string ToString(int depth)

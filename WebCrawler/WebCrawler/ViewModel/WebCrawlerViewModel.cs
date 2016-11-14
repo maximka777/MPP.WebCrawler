@@ -9,30 +9,6 @@ using WebCrawlerDLL;
 
 namespace WebCrawler.ViewModel
 {
-    class Command : ICommand
-    {
-        private readonly Action action;
-
-        #pragma warning disable 67
-        public event EventHandler CanExecuteChanged;
-        #pragma warning restore 67
-
-        public Command(Action action)
-        {
-            this.action = action;
-        }
-
-        public bool CanExecute(object parameter)
-        {
-            return true;
-        }
-
-        public void Execute(object parameter)
-        {
-            action();
-        }
-    }
-
     class WebCrawlerViewModel : INotifyPropertyChanged
     {
         private readonly WebCrawlerDLL.WebCrawler webCrawler;
@@ -56,7 +32,7 @@ namespace WebCrawler.ViewModel
             set
             {
                 stringCrawlResult = value;
-                RaisePropertyChangedEvent("StringCrawlResult");
+                RaisePropertyChangedEvent(nameof(StringCrawlResult));
             }
         }
 
