@@ -23,17 +23,18 @@ namespace WebCrawlerDLL
         private string GetHtml(string pageUrl)
         {
             string result = string.Empty;
-            HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(pageUrl);
-            myRequest.Method = "GET";
             try {
-                WebResponse myResponse = myRequest.GetResponse();
-                using (StreamReader streamReader = new StreamReader(myResponse.GetResponseStream(), Encoding.UTF8))
-                {
-                    result = streamReader.ReadToEnd();
-                    myResponse.Close();
+                HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(pageUrl);
+                myRequest.Method = "GET";
+                    WebResponse myResponse = myRequest.GetResponse();
+                    using (StreamReader streamReader = new StreamReader(myResponse.GetResponseStream(), Encoding.UTF8))
+                    {
+                        result = streamReader.ReadToEnd();
+                        myResponse.Close();
+                    }
+                
                 }
-            }
-            catch(WebException exc)
+            catch (Exception exc)
             {
 
             }
@@ -56,7 +57,10 @@ namespace WebCrawlerDLL
                         string href = link.Attributes["href"].Value;
                         if (href != null)
                         {
-                            result.Add(new Uri(baseUri, href).AbsoluteUri);
+                            try {
+                                result.Add(new Uri(baseUri, href).AbsoluteUri);
+                            }
+                            catch(Exception exc) { }
                         }
                     }
                 }

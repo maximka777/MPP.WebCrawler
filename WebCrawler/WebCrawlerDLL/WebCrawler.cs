@@ -39,15 +39,52 @@ namespace WebCrawlerDLL
         {
             var result = new CrawlResult();
             List<Task<CrawlResult>> tasks = new List<Task<CrawlResult>>();
-            foreach(string url in urls)
+            foreach (string url in urls)
             {
-                Task<CrawlResult> task = new Task<CrawlResult>(HandleUrl, new HandleUrlParam(url, 0));
+                Task<CrawlResult> task = new Task<CrawlResult>(HandleUrlByTask, new HandleUrlParam(url, 0));
                 task.Start();
                 tasks.Add(task);
             }
-            for(int i = 0; i < urls.Length; i++)
+            for (int i = 0; i < urls.Length; i++)
             {
                 result[urls[i]] = tasks[i].Result;
+            }
+            return result;
+        }
+
+        private CrawlResult HandleUrlByTask(object param)
+        {
+            CrawlResult result;
+            HandleUrlParam handleUrlParam = (HandleUrlParam)param;
+            if (maxDepth <= handleUrlParam.Depth)
+            {
+                result = null;
+            }
+            else
+            {
+                result = new CrawlResult();
+                List<Task<CrawlResult>> tasks = new List<Task<CrawlResult>>();
+                List<string> urls = PageUrlScanner.Instance.ScanPageOnUrls(handleUrlParam.Url);
+                Task<CrawlResult> task;
+                foreach (string url in urls)
+                {
+                    if (handleUrlParam.Depth > 0)
+                    {
+                        task = new Task<CrawlResult>(HandleUrl,
+                            new HandleUrlParam(url, handleUrlParam.Depth + 1));
+                    }
+                    else
+                    {
+                        task = new Task<CrawlResult>(HandleUrlByTask,
+                            new HandleUrlParam(url, handleUrlParam.Depth + 1));
+                    }
+                    task.Start();
+                    tasks.Add(task);
+                }
+                for (int i = 0; i < urls.Count; i++)
+                {
+                    result[urls[i]] = tasks[i].Result;
+                }
             }
             return result;
         }
@@ -63,18 +100,9 @@ namespace WebCrawlerDLL
             else
             {
                 result = new CrawlResult();
-                List<Task<CrawlResult>> tasks = new List<Task<CrawlResult>>();
-                List<string> urls = PageUrlScanner.Instance.ScanPageOnUrls(handleUrlParam.Url);
-                foreach (string url in urls)
+                foreach (string url in PageUrlScanner.Instance.ScanPageOnUrls(handleUrlParam.Url))
                 {
-                    Task<CrawlResult> task = new Task<CrawlResult>(HandleUrl, 
-                        new HandleUrlParam(url, handleUrlParam.Depth + 1));
-                    task.Start();
-                    tasks.Add(task);
-                }
-                for (int i = 0; i < urls.Count; i++)
-                {
-                    result[urls[i]] = tasks[i].Result;
+                    result[url] = HandleUrl(new HandleUrlParam(url, handleUrlParam.Depth + 1));
                 }
             }
             return result;

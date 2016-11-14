@@ -11,6 +11,6 @@
         <TextBox Margin="5"/>
         <Label Foreground="Blue" Margin="5,5,5,0">Crawl result</Label>
         <TextBox Text="{Binding StringCrawlResult}" Height="450" Margin="5" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
-        <Button Command="{Binding CrawlCommand}" Margin="5">Convert</Button>
+        <Button Command="{Binding CrawlCommand}" Margin="5">Crawl</Button>
     </StackPanel>
 </UserControl>
