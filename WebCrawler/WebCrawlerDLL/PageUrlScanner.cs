@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System;
 using log4net;
 using log4net.Config;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace WebCrawlerDLL
 {
@@ -29,50 +31,26 @@ namespace WebCrawlerDLL
             }
         }
 
-        private string GetHtml(string pageUrl)
-        {
-            string result = string.Empty;
-            try {
-                HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(pageUrl);
-                myRequest.Method = "GET";
-                    WebResponse myResponse = myRequest.GetResponse();
-                    using (StreamReader streamReader = new StreamReader(myResponse.GetResponseStream(), Encoding.UTF8))
-                    {
-                        result = streamReader.ReadToEnd();
-                        myResponse.Close();
-                    }
-                
-                }
-            catch (Exception exc)
-            {
-                log.Error(exc);
-            }
-            return result;
-        }
-
-        private List<string> GetUrlsFromHtml(string html, string rootUrl)
+        public List<string> GetUrlsFromHtmlString(string html, string rootUrl)
         {
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(html);
             HtmlNodeCollection links = document.DocumentNode.SelectNodes("//a");
             List<string> result = new List<string>();
             Uri baseUri = new Uri(rootUrl);
-            if (links != null)
+            foreach (var link in links)
             {
-                foreach (var link in links)
+                if (link.Attributes.Contains("href"))
                 {
-                    if (link.Attributes.Contains("href"))
+                    string href = link.Attributes["href"].Value;
                     {
-                        string href = link.Attributes["href"].Value;
-                        if (href != null)
+                        try
                         {
-                            try {
-                                result.Add(new Uri(baseUri, href).AbsoluteUri);
-                            }
-                            catch(Exception exc)
-                            {
-                                log.Error(exc);
-                            }
+                            result.Add(new Uri(baseUri, href).AbsoluteUri);
+                        }
+                        catch (Exception exc)
+                        {
+                            log.Error(exc);
                         }
                     }
                 }
@@ -80,10 +58,19 @@ namespace WebCrawlerDLL
             return result;
         }
 
-        public List<string> ScanPageOnUrls(string pageUrl)
+        public async Task<string> DownloadHtmlString(string url)
         {
-            string html = GetHtml(pageUrl);
-            return GetUrlsFromHtml(html, pageUrl);
+            string result = null;
+            HttpClient httpClient = new HttpClient();
+            try
+            {
+                result = await httpClient.GetStringAsync(url);
+            }
+            catch (HttpRequestException exc)
+            {
+                log.Error(exc);
+            }
+            return result;
         }
     }
 }
