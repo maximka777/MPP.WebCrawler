@@ -38,9 +38,12 @@ namespace WebCrawlerDLL
             {
                 result = new CrawlResult();
                 string html = await PageUrlScanner.Instance.DownloadHtmlString(url);
-                foreach (string u in PageUrlScanner.Instance.GetUrlsFromHtmlString(html, url))
+                if (html != string.Empty)
                 {
-                    result[u] = await HandleUrl(u, depth + 1);
+                    foreach (string u in PageUrlScanner.Instance.GetUrlsFromHtmlString(html, url))
+                    {
+                        result[u] = await HandleUrl(u, depth + 1);
+                    }
                 }
             }
             return result;

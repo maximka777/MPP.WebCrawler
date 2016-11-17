@@ -60,7 +60,7 @@ namespace WebCrawlerDLL
 
         public async Task<string> DownloadHtmlString(string url)
         {
-            string result = null;
+            string result = string.Empty;
             HttpClient httpClient = new HttpClient();
             try
             {

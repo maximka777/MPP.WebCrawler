@@ -12,8 +12,20 @@ namespace WebCrawler.ViewModel
     class WebCrawlerViewModel : INotifyPropertyChanged
     {
         private readonly WebCrawlerDLL.WebCrawler webCrawler;
-        private string stringCrawlResult;
+        private CrawlResult crawlResult;
         private Config config;
+        private int progress;
+        private int Progress {
+            get
+            {
+                return progress;
+            }
+            set
+            {
+                progress = value;
+                RaisePropertyChangedEvent(nameof(Progress));
+            }
+        }
 
         public WebCrawlerViewModel()
         {
@@ -23,16 +35,16 @@ namespace WebCrawler.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public string StringCrawlResult
+        public CrawlResult CrawlResult
         {
             get
             {
-                return stringCrawlResult;
+                return crawlResult;
             }
             set
             {
-                stringCrawlResult = value;
-                RaisePropertyChangedEvent(nameof(StringCrawlResult));
+                crawlResult = value;
+                RaisePropertyChangedEvent(nameof(CrawlResult));
             }
         }
 
@@ -46,8 +58,10 @@ namespace WebCrawler.ViewModel
 
         private async void Crawl()
         {
+            Progress = 0;
             CrawlResult crawlResult = await webCrawler.PerformCrawlingAsync(config.Urls.ToArray());
-            StringCrawlResult = crawlResult.ToString();
+            CrawlResult = crawlResult;
+            Progress = 100;
         }
 
         protected void RaisePropertyChangedEvent(string propertyName)
